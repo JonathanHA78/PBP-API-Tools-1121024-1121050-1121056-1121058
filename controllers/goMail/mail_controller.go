@@ -1,4 +1,4 @@
-package controllers
+package gomail
 
 import (
 	"apitools/controllers"

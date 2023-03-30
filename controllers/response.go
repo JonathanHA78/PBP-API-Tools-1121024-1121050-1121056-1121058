@@ -17,6 +17,7 @@ func SendSuccessResponse(w http.ResponseWriter, message string) {
 	response.Message = message
 	Response(w, response)
 }
+
 func SendErrorResponse(w http.ResponseWriter, message string) {
 	var response ErrorResponse
 	response.Status = 400

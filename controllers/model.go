@@ -21,10 +21,6 @@ type Task struct {
 	Complete    int       `json:"complete"`
 }
 
-type Tasks struct {
-	TaskList []Task `json:"task_list"`
-}
-
 type ErrorResponse struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
