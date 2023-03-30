@@ -2,12 +2,15 @@ package controllers
 
 import (
 	"apitools/controllers"
+	"fmt"
 	"os"
+	"strconv"
+	"time"
 
 	"gopkg.in/gomail.v2"
 )
 
-func sendEmail(templatePath string, content string, receiverMail string) string {
+func sendEmail(templatePath string, content string, receiverMail string) {
 	m := gomail.NewMessage()
 	m.SetHeader("From", "No Reply <no-reply@example.com>")
 	m.SetHeader("To", receiverMail)
@@ -23,7 +26,7 @@ func sendEmail(templatePath string, content string, receiverMail string) string 
 	}
 }
 
-func generateEmail(emailType int, users []controllers.User) string {
+func generateEmail(emailType int, users controllers.User, tasks []controllers.Task) string {
 	content := `<!DOCTYPE html>
 	<html lang="en">
 	<head>
@@ -95,18 +98,22 @@ func generateEmail(emailType int, users []controllers.User) string {
 				<img src="your-logo.png" alt="Your App Logo">
 			</div>
 			<div class="email-content">`
+	year, month, day := time.Now().Date()
+	current_year := strconv.Itoa(year)
+	fmt.Println(month)
+	fmt.Println(day)
 	switch emailType {
 	case 1:
 		//all of a user's tasklists
 		content += `<h1>All Tasks</h1>
-		<p>Hi ` + username + `,</p>
+		<p>Hi ` + users.Name + `,</p>
 		<p>These are all of the tasks that you have noted: </p>
 		`
-		if tasks.length != nil {
-			for i := 1; i <= tasks.length; i++ {
-				content += `<ul><li><strong>Task Title:</strong> ` + tasks[i].title + `</li>
-				<li><strong>Task Description:</strong> ` + tasks[i].description + `</li>
-				<li><strong>Due Date:</strong> ` + tasks[i].due_date + `</li></ul>`
+		if len(tasks) != 0 {
+			for i := 0; i < len(tasks); i++ {
+				content += `<ul><li><strong>Task Title:</strong> ` + tasks[i].Title + `</li>
+				<li><strong>Task Description:</strong> ` + tasks[i].Description + `</li>
+				<li><strong>Due Date:</strong> ` + tasks[i].DueTime.String() + `</li></ul>`
 			}
 			content += `
 					<p>Please make sure to complete the task on time. If you have any questions or need assistance, feel free to contact us.</p>
@@ -134,14 +141,14 @@ func generateEmail(emailType int, users []controllers.User) string {
 	case 2:
 		//user tasklist for the day
 		content += `<h1>Tasks for the day</h1>
-		<p>Hi ` + username + `,</p>
+		<p>Hi ` + users.Name + `,</p>
 		<p>These are all of the tasks that you have set for today: </p>
 		`
-		if tasks.length != nil {
-			for i := 1; i <= tasks.length; i++ {
-				content += `<ul><li><strong>Task Title:</strong> ` + tasks[i].title + `</li>
-				<li><strong>Task Description:</strong> ` + tasks[i].description + `</li>
-				<li><strong>Due Date:</strong> ` + tasks[i].due_date + `</li></ul>`
+		if len(tasks) != 0 {
+			for i := 0; i < len(tasks); i++ {
+				content += `<ul><li><strong>Task Title:</strong> ` + tasks[i].Title + `</li>
+				<li><strong>Task Description:</strong> ` + tasks[i].Description + `</li>
+				<li><strong>Due Date:</strong> ` + tasks[i].DueTime.String() + `</li></ul>`
 			}
 			content += `
 					<p>Please make sure to complete the task on time. If you have any questions or need assistance, feel free to contact us.</p>
@@ -168,12 +175,12 @@ func generateEmail(emailType int, users []controllers.User) string {
 	case 3:
 		//task creation
 		content += `<h1>New Task Created</h1>
-		<p>Hi ` + username + `,</p>
+		<p>Hi ` + users.Name + `,</p>
 		<p>You have successfully created a new task in your to-do list: </p>
 		`
-		content += `<ul><li><strong>Task Title:</strong> ` + tasks[i].title + `</li>
-			<li><strong>Task Description:</strong> ` + tasks[i].description + `</li>
-			<li><strong>Due Date:</strong> ` + tasks[i].due_date + `</li></ul>
+		content += `<ul><li><strong>Task Title:</strong> ` + tasks[0].Title + `</li>
+			<li><strong>Task Description:</strong> ` + tasks[0].Description + `</li>
+			<li><strong>Due Date:</strong> ` + tasks[0].DueTime.String() + `</li></ul>
 					<p>Keep up the good work and stay on top of your tasks. If you have any questions or need assistance, feel free to contact us.</p>
 					<p>Best regards,</p>
 					<p>Your App Team</p></div>
@@ -186,12 +193,12 @@ func generateEmail(emailType int, users []controllers.User) string {
 	case 4:
 		//task deletion
 		content += `<h1>Task Deleted</h1>
-		<p>Hi ` + username + `,</p>
+		<p>Hi ` + users.Name + `,</p>
 		<p>We wanted to let you know that the following task has been successfully deleted from your to-do list:</p>
 		`
-		content += `<ul><li><strong>Task Title:</strong> ` + tasks[i].title + `</li>
-			<li><strong>Task Description:</strong> ` + tasks[i].description + `</li>
-			<li><strong>Due Date:</strong> ` + tasks[i].due_date + `</li></ul>
+		content += `<ul><li><strong>Task Title:</strong> ` + tasks[0].Title + `</li>
+			<li><strong>Task Description:</strong> ` + tasks[0].Description + `</li>
+			<li><strong>Due Date:</strong> ` + tasks[0].DueTime.String() + `</li></ul>
 					<p>If you have deleted the task by mistake or need any assistance, feel free to contact us.</p>
 					<p>Best regards,</p>
 					<p>Your App Team</p></div>
@@ -204,12 +211,12 @@ func generateEmail(emailType int, users []controllers.User) string {
 	case 5:
 		//task update
 		content += `<h1>Task Edited</h1>
-		<p>Hi ` + username + `,</p>
+		<p>Hi ` + users.Name + `,</p>
 		<p>You have successfully updated a new task in your to-do list: </p>
 		`
-		content += `<ul><li><strong>Task Title:</strong> ` + tasks[i].title + `</li>
-			<li><strong>Task Description:</strong> ` + tasks[i].description + `</li>
-			<li><strong>Due Date:</strong> ` + tasks[i].due_date + `</li></ul>
+		content += `<ul><li><strong>Task Title:</strong> ` + tasks[0].Title + `</li>
+			<li><strong>Task Description:</strong> ` + tasks[0].Description + `</li>
+			<li><strong>Due Date:</strong> ` + tasks[0].DueTime.String() + `</li></ul>
 					<p>Keep up the good work and stay on top of your tasks. If you have any questions or need assistance, feel free to contact us.</p>
 					<p>Best regards,</p>
 					<p>Your App Team</p></div>
