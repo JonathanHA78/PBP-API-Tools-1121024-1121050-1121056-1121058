@@ -11,6 +11,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func printEntah() {
+	fmt.Println("masuk bos kuh!")
+}
+
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", controllers.TestConnection).Methods("GET")
