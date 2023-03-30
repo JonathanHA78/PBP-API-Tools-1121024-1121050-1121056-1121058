@@ -67,7 +67,8 @@ func StringToTime(dateStr string) time.Time {
 	if err != nil {
 		log.Fatal("Error parsing date string:", err)
 	}
-	return date
+	utcPlus7 := time.FixedZone("UTC+7", 7*60*60)
+	return date.In(utcPlus7)
 }
 
 func InsertTask(w http.ResponseWriter, r *http.Request) {

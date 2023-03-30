@@ -18,7 +18,8 @@ func SendEmail(content string, receiverMail string) {
 	m.SetBody("text/html", content)
 	email := os.Getenv("EMAIL")
 	password := os.Getenv("PASSWORD")
-	d := gomail.NewDialer("smtp.gmail.com", 465, email, password)
+	fmt.Println(email, " ", password)
+	d := gomail.NewDialer("smtp.gmail.com", 465, "if-21056@students.ithb.ac.id", "factcheck")
 
 	// Send the email to Bob, Cora and Dan.
 	if err := d.DialAndSend(m); err != nil {

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"apitools/model"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -24,7 +25,10 @@ func createCronExpression(t time.Time) string {
 
 func CreateSchedule(t time.Time, todo func()) {
 	s := gocron.NewScheduler(time.UTC)
-	s.Cron(createCronExpression(t)).Do(todo)
+	cron := createCronExpression(t)
+	fmt.Println(time.UTC)
+	fmt.Println("Tanggal: ", t, " menjadi ", cron)
+	s.Cron(cron).Do(todo)
 	s.StartAsync()
 }
 
@@ -37,14 +41,18 @@ func SendDailyEmail() {
 func SendReminderMail(userId string, task model.Task) {
 	db := connect()
 	defer db.Close()
-	query := "select name, email from users where user_id = ?"
+	query := "select name, email from users where id = ?"
 	var name string
 	var email string
 	var tasks []model.Task
 	tasks = append(tasks, task)
 	errQuery := db.QueryRow(query, userId).Scan(&name, &email)
+	fmt.Println("Akan dikrimkan ke ", email, " pada ", task.DueTime)
 	if errQuery == nil {
 		content := GenerateEmail(1, name, tasks)
+		content2 := GenerateEmail(3, name, tasks)
+
+		SendEmail(content2, email)
 		CreateSchedule(task.DueTime, func() { SendEmail(content, email) })
 	} else {
 		log.Fatal(errQuery)
