@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -35,22 +36,28 @@ func GetAllUsers() []model.User {
 }
 
 func GetTaskListDaily(userID int) []model.Task {
-	db := connect()
-	defer db.Close()
-	query := "SELECT id,user_id,title,description,due_date,completed FROM tasks where DATE(due_date)= CURDATE()AND completed=0 AND user_id =? ORDER BY due_date ASC"
-	rows, err := db.Query(query, userID)
-	if err != nil {
-		log.Fatal(err)
-	}
-	var task model.Task
 	var tasks []model.Task
-	for rows.Next() {
-		if err := rows.Scan(&task.Id, &task.UserId, &task.Title, &task.Description, &task.DueTime, &task.Complete); err != nil {
+	key := "user" + strconv.Itoa(userID)
+	tasks = GetUserTasksRedis(key)
+	if tasks == nil {
+		db := connect()
+		defer db.Close()
+		query := "SELECT id,user_id,title,description,due_date,completed FROM tasks where DATE(due_date)= CURDATE()AND completed=0 AND user_id =? ORDER BY due_date ASC"
+		rows, err := db.Query(query, userID)
+		if err != nil {
 			log.Fatal(err)
-		} else {
-			tasks = append(tasks, task)
 		}
+		var task model.Task
+		for rows.Next() {
+			if err := rows.Scan(&task.Id, &task.UserId, &task.Title, &task.Description, &task.DueTime, &task.Complete); err != nil {
+				log.Fatal(err)
+			} else {
+				tasks = append(tasks, task)
+			}
+		}
+		SetUserTasksRedis(tasks, key)
 	}
+
 	return tasks
 }
 
@@ -81,6 +88,9 @@ func InsertTask(w http.ResponseWriter, r *http.Request) {
 		user_id, title, desc, dueTime, completed,
 	)
 	if errQuery == nil {
+		userId, _ := strconv.Atoi(user_id)
+		tasks := GetTaskListDaily(userId)
+		SetUserTasksRedis(tasks, "user"+user_id)
 		var task model.Task
 		task.Title = title
 		task.Description = desc

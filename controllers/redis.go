@@ -12,7 +12,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func GetTasksRedis() []model.Task {
+func GetUserTasksRedis(key string) []model.Task {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
@@ -21,7 +21,7 @@ func GetTasksRedis() []model.Task {
 
 	var ctx = context.Background()
 
-	value, err := client.Get(ctx, "users").Result()
+	value, err := client.Get(ctx, key).Result()
 	if err != nil {
 		log.Println("Get Error")
 		log.Println(err)
@@ -34,8 +34,8 @@ func GetTasksRedis() []model.Task {
 	return tasks
 }
 
-func SetTasksRedis(users []model.User) {
-	converted, err := json.Marshal(users)
+func SetUserTasksRedis(tasks []model.Task, key string) {
+	converted, err := json.Marshal(tasks)
 	if err != nil {
 		log.Println(err)
 		return
@@ -49,7 +49,7 @@ func SetTasksRedis(users []model.User) {
 
 	var ctx = context.Background()
 
-	err = client.Set(ctx, "users", converted, 5*time.Second).Err()
+	err = client.Set(ctx, key, converted, 5*time.Second).Err()
 	if err != nil {
 		log.Println("Set Error")
 		log.Println(err)
@@ -59,7 +59,7 @@ func SetTasksRedis(users []model.User) {
 	}
 }
 
-func DeleteUsersCache() error {
+func DeleteUserTasksCache(key string) error {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
@@ -68,7 +68,7 @@ func DeleteUsersCache() error {
 
 	var ctx = context.Background()
 
-	err := client.Del(ctx, "users").Err()
+	err := client.Del(ctx, key).Err()
 	if err != nil {
 		log.Println("Delete Error")
 		log.Println(err)
