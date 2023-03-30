@@ -16,9 +16,11 @@ func printEntah() {
 }
 
 func main() {
+	controllers.SendDailyEmail()
 	router := mux.NewRouter()
 	router.HandleFunc("/", controllers.TestConnection).Methods("GET")
 	router.HandleFunc("/task", controllers.InsertTask).Methods("POST")
+
 	http.Handle("/", router)
 	fmt.Println("Connected to port 8181")
 	log.Println("Connected to port 8181")

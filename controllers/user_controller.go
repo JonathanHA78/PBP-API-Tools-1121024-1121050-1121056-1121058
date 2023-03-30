@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 func TestConnection(w http.ResponseWriter, r *http.Request) {
@@ -53,6 +54,15 @@ func GetTaskListDaily(userID int) []model.Task {
 	return tasks
 }
 
+func StringToTime(dateStr string) time.Time {
+	layout := "2006-01-02 15:04:05"
+	date, err := time.Parse(layout, dateStr)
+	if err != nil {
+		log.Fatal("Error parsing date string:", err)
+	}
+	return date
+}
+
 func InsertTask(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
@@ -71,6 +81,11 @@ func InsertTask(w http.ResponseWriter, r *http.Request) {
 		user_id, title, desc, dueTime, completed,
 	)
 	if errQuery == nil {
+		var task model.Task
+		task.Title = title
+		task.Description = desc
+		task.DueTime = StringToTime(dueTime)
+		SendReminderMail(user_id, task)
 		SendSuccessResponse(w, "berhasil")
 	} else {
 		SendErrorResponse(w, "unkown error")

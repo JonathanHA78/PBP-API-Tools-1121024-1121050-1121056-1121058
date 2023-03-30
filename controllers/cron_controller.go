@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"apitools/model"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -23,5 +25,28 @@ func createCronExpression(t time.Time) string {
 func CreateSchedule(t time.Time, todo func()) {
 	s := gocron.NewScheduler(time.UTC)
 	s.Cron(createCronExpression(t)).Do(todo)
+	s.StartAsync()
+}
 
+func SendDailyEmail() {
+	s := gocron.NewScheduler(time.UTC)
+	s.Cron("0 0 6 * * *").Do(SendEmailToAll)
+	s.StartAsync()
+}
+
+func SendReminderMail(userId string, task model.Task) {
+	db := connect()
+	defer db.Close()
+	query := "select name, email from users where user_id = ?"
+	var name string
+	var email string
+	var tasks []model.Task
+	tasks = append(tasks, task)
+	errQuery := db.QueryRow(query, userId).Scan(&name, &email)
+	if errQuery == nil {
+		content := GenerateEmail(1, name, tasks)
+		CreateSchedule(task.DueTime, func() { SendEmail(content, email) })
+	} else {
+		log.Fatal(errQuery)
+	}
 }
