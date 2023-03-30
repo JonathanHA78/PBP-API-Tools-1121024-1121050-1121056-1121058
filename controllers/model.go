@@ -13,11 +13,12 @@ type Users struct {
 }
 
 type Task struct {
-	Id       int       `json:"id"`
-	UserId   int       `json:"user_id"`
-	Desc     string    `json:"description"`
-	DueTime  time.Time `json:"due_time"`
-	Complete int       `json:"complete"`
+	Id          int       `json:"id"`
+	UserId      int       `json:"user_id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	DueTime     time.Time `json:"due_time"`
+	Complete    int       `json:"complete"`
 }
 
 type Tasks struct {

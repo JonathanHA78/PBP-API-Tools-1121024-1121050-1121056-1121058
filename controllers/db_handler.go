@@ -8,7 +8,7 @@ import (
 )
 
 func connect() *sql.DB {
-	db, err := sql.Open("mysql", "root:@tcp(localhost:3306)/<nama DB>?parseTime=true&loc=Asia%2FJakarta")
+	db, err := sql.Open("mysql", "root:@tcp(localhost:3306)/db_todolist?parseTime=true&loc=Asia%2FJakarta")
 	if err != nil {
 		log.Fatal(err)
 	}
