@@ -137,7 +137,6 @@ func generateEmail(emailType int, users controllers.User, tasks []controllers.Ta
 			</body>
 			</html>`
 		}
-
 	case 2:
 		//user tasklist for the day
 		content += `<h1>Tasks for the day</h1>
