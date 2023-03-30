@@ -15,6 +15,7 @@ func TestConnection(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Sukses bos!")
 	SendSuccessResponse(w, "Sukses Connect!")
 }
+
 func GetAllUsers() []model.User {
 	db := connect()
 	defer db.Close()
@@ -56,6 +57,8 @@ func GetTaskListDaily(userID int) []model.Task {
 			}
 		}
 		SetUserTasksRedis(tasks, key)
+	} else {
+		fmt.Println("masuk cache")
 	}
 
 	return tasks
@@ -67,8 +70,9 @@ func StringToTime(dateStr string) time.Time {
 	if err != nil {
 		log.Fatal("Error parsing date string:", err)
 	}
-	utcPlus7 := time.FixedZone("UTC+7", 7*60*60)
-	return date.In(utcPlus7)
+	// utcPlus7 := time.FixedZone("UTC+7", 7*60*60)
+	// return date.In(utcPlus7)
+	return date
 }
 
 func InsertTask(w http.ResponseWriter, r *http.Request) {

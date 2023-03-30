@@ -47,7 +47,7 @@ func SetUserTasksRedis(tasks []model.Task, key string) {
 
 	var ctx = context.Background()
 
-	err = client.Set(ctx, key, converted, 5*time.Second).Err()
+	err = client.Set(ctx, key, converted, 5*time.Minute).Err()
 	if err != nil {
 		log.Println("Set Error")
 		log.Println(err)

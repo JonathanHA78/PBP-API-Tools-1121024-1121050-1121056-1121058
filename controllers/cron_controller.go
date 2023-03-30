@@ -11,7 +11,7 @@ import (
 	"github.com/go-co-op/gocron"
 )
 
-func createCronExpression(t time.Time) string {
+func CreateCronExpression(t time.Time) string {
 	year := strconv.Itoa(t.Year())
 	month := strconv.Itoa(int(t.Month()))
 	day := strconv.Itoa(t.Day())
@@ -23,18 +23,30 @@ func createCronExpression(t time.Time) string {
 	return cronExpression
 }
 
-func CreateSchedule(t time.Time, todo func()) {
-	s := gocron.NewScheduler(time.UTC)
-	cron := createCronExpression(t)
-	fmt.Println(time.UTC)
-	fmt.Println("Tanggal: ", t, " menjadi ", cron)
-	s.Cron(cron).Do(todo)
-	s.StartAsync()
-}
+// func CreateSchedule(t time.Time, todo func()) {
+// 	layout := "2006-01-02 15:04:05"
+// 	timeSchedule := t.Format(layout)
+// 	// d := t.Sub(time.Now())
+// 	// fmt.Println(t)
+// 	// fmt.Println(time.Now())
+// 	// fmt.Println(d)
+// 	cron := CreateCronExpression(t)
+// 	fmt.Println(cron)
+// 	fmt.Println(timeSchedule)
+// 	s := gocron.NewScheduler(time.Local)
+// 	s.At(t.String()).Do(todo)
+// 	// s.Every(d).Do(todo)
+// 	// s.At(time.Now()).Do(todo)
+// 	// _, err := s.Every(1).Minute().
+// 	// if err != nil {
+// 	// 	log.Fatal(err)
+// 	// }
+// 	s.StartAsync()
+// }
 
 func SendDailyEmail() {
-	s := gocron.NewScheduler(time.UTC)
-	s.Cron("0 0 6 * * *").Do(SendEmailToAll)
+	s := gocron.NewScheduler(time.Local)
+	s.Every(1).Day().At("01:48").Do(SendEmailToAll)
 	s.StartAsync()
 }
 
@@ -49,11 +61,14 @@ func SendReminderMail(userId string, task model.Task) {
 	errQuery := db.QueryRow(query, userId).Scan(&name, &email)
 	fmt.Println("Akan dikrimkan ke ", email, " pada ", task.DueTime)
 	if errQuery == nil {
-		content := GenerateEmail(1, name, tasks)
+		// content := GenerateEmail(1, name, tasks)
 		content2 := GenerateEmail(3, name, tasks)
 
 		SendEmail(content2, email)
-		CreateSchedule(task.DueTime, func() { SendEmail(content, email) })
+		// go CreateSchedule(task.DueTime, func() {
+		// 	fmt.Println("email pengingat terkirim")
+		// 	SendEmail(content, email)
+		// })
 	} else {
 		log.Fatal(errQuery)
 	}

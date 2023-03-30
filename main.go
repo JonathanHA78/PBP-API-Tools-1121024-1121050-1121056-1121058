@@ -11,10 +11,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func printEntah() {
-	fmt.Println("masuk bos kuh!")
-}
-
 func main() {
 	controllers.SendDailyEmail()
 	router := mux.NewRouter()
