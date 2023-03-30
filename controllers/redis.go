@@ -1,4 +1,4 @@
-package goredis
+package controllers
 
 import (
 	"apitools/model"

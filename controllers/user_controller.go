@@ -13,6 +13,25 @@ func TestConnection(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Sukses bos!")
 	SendSuccessResponse(w, "Sukses Connect!")
 }
+func GetAllUsers() []model.User {
+	db := connect()
+	defer db.Close()
+	query := "SELECT id,name,email FROM users"
+	rows, err := db.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var user model.User
+	var users []model.User
+	for rows.Next() {
+		if err := rows.Scan(&user.Id, &user.Name, &user.Email); err != nil {
+			log.Fatal(err)
+		} else {
+			users = append(users, user)
+		}
+	}
+	return users
+}
 
 func GetTaskListDaily(userID int) []model.Task {
 	db := connect()

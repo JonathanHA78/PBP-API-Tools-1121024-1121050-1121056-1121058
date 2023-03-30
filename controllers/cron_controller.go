@@ -23,4 +23,5 @@ func createCronExpression(t time.Time) string {
 func CreateSchedule(t time.Time, todo func()) {
 	s := gocron.NewScheduler(time.UTC)
 	s.Cron(createCronExpression(t)).Do(todo)
+
 }

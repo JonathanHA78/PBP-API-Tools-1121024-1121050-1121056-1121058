@@ -1,4 +1,4 @@
-package gomail
+package controllers
 
 import (
 	"apitools/model"
@@ -10,7 +10,7 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-func sendEmail(templatePath string, content string, receiverMail string) {
+func SendEmail(content string, receiverMail string) {
 	m := gomail.NewMessage()
 	m.SetHeader("From", "No Reply <no-reply@example.com>")
 	m.SetHeader("To", receiverMail)
@@ -26,7 +26,7 @@ func sendEmail(templatePath string, content string, receiverMail string) {
 	}
 }
 
-func generateEmail(emailType int, users model.User, tasks []model.Task) string {
+func GenerateEmail(emailType int, users model.User, tasks []model.Task) string {
 	content := `<!DOCTYPE html>
 	<html lang="en">
 	<head>
