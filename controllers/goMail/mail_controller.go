@@ -1,7 +1,7 @@
-package controllers
+package gomail
 
 import (
-	"apitools/controllers"
+	"apitools/model"
 	"fmt"
 	"os"
 	"strconv"
@@ -26,7 +26,7 @@ func sendEmail(templatePath string, content string, receiverMail string) {
 	}
 }
 
-func generateEmail(emailType int, users controllers.User, tasks []controllers.Task) string {
+func generateEmail(emailType int, users model.User, tasks []model.Task) string {
 	content := `<!DOCTYPE html>
 	<html lang="en">
 	<head>

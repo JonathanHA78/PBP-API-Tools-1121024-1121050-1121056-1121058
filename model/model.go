@@ -1,4 +1,4 @@
-package controllers
+package model
 
 import "time"
 
@@ -8,10 +8,6 @@ type User struct {
 	Email string `json:"email"`
 }
 
-type Users struct {
-	Users []User `json:"user_list"`
-}
-
 type Task struct {
 	Id          int       `json:"id"`
 	UserId      int       `json:"user_id"`
@@ -19,10 +15,6 @@ type Task struct {
 	Description string    `json:"description"`
 	DueTime     time.Time `json:"due_time"`
 	Complete    int       `json:"complete"`
-}
-
-type Tasks struct {
-	TaskList []Task `json:"task_list"`
 }
 
 type ErrorResponse struct {
