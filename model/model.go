@@ -1,4 +1,4 @@
-package controllers
+package model
 
 import "time"
 
@@ -6,10 +6,6 @@ type User struct {
 	Id    int    `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
-}
-
-type Users struct {
-	Users []User `json:"user_list"`
 }
 
 type Task struct {

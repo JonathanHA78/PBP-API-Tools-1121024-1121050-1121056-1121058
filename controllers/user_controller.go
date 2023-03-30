@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"apitools/model"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,7 +14,7 @@ func TestConnection(w http.ResponseWriter, r *http.Request) {
 	SendSuccessResponse(w, "Sukses Connect!")
 }
 
-func GetTaskListDaily(userID int) []Task {
+func GetTaskListDaily(userID int) []model.Task {
 	db := connect()
 	defer db.Close()
 	query := "SELECT id,user_id,title,description,due_date,completed FROM tasks where DATE(due_date)= CURDATE()AND completed=0 AND user_id =? ORDER BY due_date ASC"
@@ -21,8 +22,8 @@ func GetTaskListDaily(userID int) []Task {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var task Task
-	var tasks []Task
+	var task model.Task
+	var tasks []model.Task
 	for rows.Next() {
 		if err := rows.Scan(&task.Id, &task.UserId, &task.Title, &task.Description, &task.DueTime, &task.Complete); err != nil {
 			log.Fatal(err)
